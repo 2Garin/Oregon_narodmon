@@ -14,6 +14,7 @@
 #include <ESP8266WiFi.h>
 
 #define TEST_MODE        1              //Режим отладки (данные на narodmon.ru не отсылаются)
+#define USE_TYPE_PREFIX  0              //Добавлять префикс типа датчика к номеру канала (1: T301, H301 / 0: T1, H1)
 
 //Кол-во датчиков различных типов, используемых в системе.
 //Для экономии памяти можно обнулить неиспользуемые типы датчиков
@@ -722,7 +723,9 @@ String buildOregonData()
       if (pref.length() == 0) continue;
 
       s += "#T";
+      #if USE_TYPE_PREFIX
       s += pref;
+      #endif
       s += t_sensor[i].chnl;
       s += "#";
       s += t_sensor[i].temperature;
@@ -751,7 +754,9 @@ String buildOregonData()
         }
 
         s += "#H";
+        #if USE_TYPE_PREFIX
         s += pref;
+        #endif
         s += t_sensor[i].chnl;
         s += "#";
         s += humidity_to_send;
@@ -765,7 +770,9 @@ String buildOregonData()
       t_sensor[i].type == BTHR968))
       {
         s += "#P";
+        #if USE_TYPE_PREFIX
         s += pref;
+        #endif
         s += t_sensor[i].chnl;
         s += "#";
         s += t_sensor[i].pressure;
@@ -775,7 +782,9 @@ String buildOregonData()
       if ((t_sensor[i].type & 0xFF00) == THP)
       {
         s += "#V";
+        #if USE_TYPE_PREFIX
         s += pref;
+        #endif
         s += t_sensor[i].chnl;
         s += "#";
         s += t_sensor[i].voltage;
