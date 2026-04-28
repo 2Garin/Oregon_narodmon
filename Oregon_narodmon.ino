@@ -645,7 +645,7 @@ bool send_data() {
     Serial.println(' ');
     String s = mac;
     Serial.println(s);
-    if (!TEST_MODE) client.println(s);
+    if (!TEST_MODE) client.print(s + "\n");
     //Отправляем данные Oregon
     Serial.print(payload);
     if (!TEST_MODE) client.print(payload);
