@@ -422,7 +422,7 @@ void loop()
       
       //Направление
       //Вычисляется вектор - его направление и модуль.
-      if (wind_sensor.number_of_dir_receiving == 1 && (wind_sensor.direction_x != 0 || wind_sensor.direction_x != 0))
+      if (wind_sensor.number_of_dir_receiving == 1 && (wind_sensor.direction_x != 0 || wind_sensor.direction_y != 0))
       {
         float wdiv = sqrt((wind_sensor.direction_x * wind_sensor.direction_x) + (wind_sensor.direction_y * wind_sensor.direction_y));
         wind_sensor.direction_x /= wdiv;
@@ -705,17 +705,16 @@ bool send_data() {
     //Завершаем передачу
     if (!TEST_MODE) client.println("##");
     Serial.println("##");
-    //Ждём отключения клиента
+    //Ждём отключения клиента (сервер сам закрывает соединение после "##")
     cur_mark = millis();
     if (!TEST_MODE)
     {
-      do 
+      while (client.connected())
       {
         yield();
-        if (millis() > cur_mark + DISCONNECT_TIMEOUT) break;
+        if (millis() - cur_mark > DISCONNECT_TIMEOUT) break;
       }
-      while (!client.connected());
-    } 
+    }
      
     Serial.println(' ');
     if (!TEST_MODE) client.stop();
