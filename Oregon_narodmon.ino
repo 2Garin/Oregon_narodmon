@@ -775,16 +775,16 @@ String buildOregonData()
       s += t_sensor[i].temperature;
       s += "\n";
     
-      if (t_sensor[i].humidity > 0 && t_sensor[i].humidity <= 100  &&
+      if (t_sensor[i].humidity > 0 && t_sensor[i].humidity <= 100 &&
       (t_sensor[i].type == THGN132 ||
-      t_sensor[i].type == THGN500 ||
-      t_sensor[i].type == THGR810 ||
-      (t_sensor[i].type & 0x0FFF) == RTGN318) ||
-      (t_sensor[i].type == BTHGN129  ||
+       t_sensor[i].type == THGN500 ||
+       t_sensor[i].type == THGR810 ||
+       (t_sensor[i].type & 0x0FFF) == RTGN318 ||
+       t_sensor[i].type == BTHGN129 ||
       #if ADD_SENS_SUPPORT == 1
-      (t_sensor[i].type & 0xFF00) == THP  ||
+       (t_sensor[i].type & 0xFF00) == THP ||
       #endif
-      t_sensor[i].type == BTHR968))
+       t_sensor[i].type == BTHR968))
       {
         float humidity_to_send = t_sensor[i].humidity;
         //При морозе показания влажности у Oregon часто залипают. Добавляем
