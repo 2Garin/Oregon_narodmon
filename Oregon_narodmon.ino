@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Скетч для передачи показаний с беспроводных датчиков Oregon Scientific на сервис “Народный Мониторинга” (narodmon.ru)
+//Скетч для передачи показаний с беспроводных датчиков Oregon Scientific на сервис «Народный мониторинг» (narodmon.ru)
 //с помощью Arduino-совместимых плат на основе ESP8266 (Wemos D1, NodeMCU).
 
 //Для подключения необходимы:
@@ -15,7 +15,7 @@
 
 #define TEST_MODE        1              //Режим отладки (данные на narodmon.ru не отсылаются)
 
-//Кол-во датчиков различных типов используемых в системе. 
+//Кол-во датчиков различных типов, используемых в системе.
 //Для экономии памяти можно обнулить неиспользуемые типы датчиков
 #define NOF_132     3     //THGN132
 #define NOF_500     1     //THGN500
@@ -36,7 +36,7 @@
 
 //Анемометр
 #define WIND_CORRECTION 0     //Коррекция севера на флюгере в градусах (используется при невозможности сориентировать датчик строго на север)
-#define NO_WINDDIR      4     //Кол-во циклов передачи, необходимое для накопления данных для о направлении ветра
+#define NO_WINDDIR      4     //Кол-во циклов передачи, необходимое для накопления данных о направлении ветра
 
 //Антизалипание влажности при морозе.
 //При сильном минусе показания влажности у Oregon часто застывают на одном значении, и narodmon
@@ -60,7 +60,7 @@ struct BTHGN_sensor
   byte  chnl;                     //канал передачи
   word  type;                     //Тип датчика
   float temperature;              //Температура
-  float humidity;                 //Влажность. 
+  float humidity;                 //Влажность.
   float pressure;                 //Давление в мм.рт.ст.
   bool  battery;                  //Флаг батареи
   float voltage;                  //Напряжение батареи
@@ -74,7 +74,7 @@ struct WGR800_sensor
   byte  number_of_receiving = 0;  //сколько пакетов получено в процессе сбора данных
   byte  number_of_dir_receiving = 0;  //сколько пакетов получено в процессе сбора данных
   unsigned long rcv_time = 7000000;// времена прихода последних пакетов
-  
+
   float midspeed;                 //Средняя скорость ветра
   float maxspeed;                 //Порывы ветра
   float direction_x;              // Направление ветра
@@ -92,7 +92,7 @@ struct UVN800_sensor
 {
   byte  number_of_receiving = 0;  //сколько пакетов получено в процессе сбора данных
   unsigned long rcv_time = 7000000;// времена прихода последних пакетов
-  
+
   float  index;                     //УФ-индекс
   bool battery;                    //Флаг батареи
 };
@@ -104,7 +104,7 @@ struct PCR800_sensor
 {
   byte  number_of_receiving = 0;  //сколько пакетов получено в процессе сбора данных
   unsigned long rcv_time = 7000000;// времена прихода последних пакетов
-  
+
   float  rate;                    //Интенсивность осадков
   float  counter;                 //счётчик осадков
   bool battery;                   //Флаг батареи
@@ -114,20 +114,20 @@ PCR800_sensor rain_sensor;
 //****************************************************************************************
 
 #define BLUE_LED 2      //Индикация подключения к WiFi
-#define GREEN_LED 14    //Индикатор успешной доставки пакета а народмон
+#define GREEN_LED 14    //Индикатор успешной доставки пакета на народмон
 #define RED_LED 255     //Индикатор ошибки доставки пакета на народмон
 
 
-//Параметоы соединения с narodmon:
+//Параметры соединения с narodmon:
 //IPAddress nardomon_server(94,19,113,221);
-char nardomon_server[] = "narodmon.ru"; 
+char nardomon_server[] = "narodmon.ru";
 int port=8283;
 WiFiClient client; //Клиент narodmon
 
 
-const unsigned long postingInterval = SEND_INTERVAL; 
-unsigned long lastConnectionTime = 0;                   
-boolean lastConnected = false;                          
+const unsigned long postingInterval = SEND_INTERVAL;
+unsigned long lastConnectionTime = 0;
+boolean lastConnected = false;
 unsigned long cur_mark;
 
 
@@ -138,11 +138,11 @@ unsigned long cur_mark;
 void setup()
 {
 
-    
-  pinMode(BLUE_LED, OUTPUT);        
-  pinMode(GREEN_LED, OUTPUT);        
-  pinMode(RED_LED, OUTPUT);        
-  
+
+  pinMode(BLUE_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(RED_LED, OUTPUT);
+
   /////////////////////////////////////////////////////
   //Запуск Serial-ов
 
@@ -155,21 +155,21 @@ void setup()
 
   if (TEST_MODE) Serial.println(F("TEST MODE"));
 
-  
+
   /////////////////////////////////////////////////////
   //Запуск Wifi
-  
+
 
   wifi_connect();
   /////////////////////////////////////////////////////
-  
 
-  digitalWrite(BLUE_LED, HIGH);    
+
+  digitalWrite(BLUE_LED, HIGH);
   if (test_narodmon_connection()){
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, LOW);
-    
-    
+
+
   }
   else {
     digitalWrite(GREEN_LED, LOW);
@@ -178,27 +178,27 @@ void setup()
   }
 
 
-  //вкючение прослушивания радиоканала  
-  oregon.start(); 
-  
+  //Включение прослушивания радиоканала
+  oregon.start();
+
 
 }
 //////////////////////////////////////////////////////////////////////
 //LOOP//////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
-void loop() 
+void loop()
 {
   //////////////////////////////////////////////////////////////////////
   //Защита от подвисаний/////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////  
+  //////////////////////////////////////////////////////////////////////
   if  (micros() > 0xFFF00000) while ( micros() < 0xFFF00000); //Висим секунду до переполнения
   if  (millis() > 0xFFFFFC0F) while ( millis() < 0xFFFFFC0F); //Висим секунду до переполнения
 
 
   //////////////////////////////////////////////////////////////////////
   //Проверка полученных данных,/////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////  
+  //////////////////////////////////////////////////////////////////////
   bool is_a_data_to_send = false;
   for (int i = 0; i < N_OF_THP_SENSORS; i++){
     if (t_sensor[i].number_of_receiving) is_a_data_to_send = 1;                 // Есть ли данные для отправки?
@@ -208,29 +208,29 @@ void loop()
    if (uv_sensor.number_of_receiving) is_a_data_to_send = 1;                 // Есть ли данные для отправки?
   //////////////////////////////////////////////////////////////////////
   //Отправка данных на narodmon.ru/////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////  
-  
+  //////////////////////////////////////////////////////////////////////
+
   if (millis() - lastConnectionTime > postingInterval && is_a_data_to_send)  {
 
     if (is_a_data_to_send)
     {
     //Обязательно отключить прослушивание канала
     oregon.stop();
-    
 
-    digitalWrite(BLUE_LED, HIGH);    
+
+    digitalWrite(BLUE_LED, HIGH);
     if (send_data()){
       digitalWrite(GREEN_LED, HIGH);
       digitalWrite(RED_LED, LOW);
-      
+
     }
     else {
       digitalWrite(GREEN_LED, LOW);
       digitalWrite(RED_LED, HIGH);
-      
+
     }
 
-    oregon.start();    
+    oregon.start();
     }
     else Serial.println(F("No data to send"));
   }
@@ -238,15 +238,15 @@ void loop()
 
   //////////////////////////////////////////////////////////////////////
   //Захват пакета,//////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////  
+  //////////////////////////////////////////////////////////////////////
   oregon.capture(0);
   //
   //Захваченные данные годны до следующего вызова capture
 
   //////////////////////////////////////////////////////////////////////
-  //ОБработка полученного пакета//////////////////////////////////////////////
-  //ОБработка полученного пакета//////////////////////////////////////////////
-  if (oregon.captured)  
+  //Обработка полученного пакета//////////////////////////////////////////////
+  //Обработка полученного пакета//////////////////////////////////////////////
+  if (oregon.captured)
   {
     yield();
     //Вывод информации в Serial
@@ -256,12 +256,12 @@ void loop()
     if (oregon.ver == 2) Serial.print(F("  "));
     if (oregon.ver == 3) Serial.print(F("3 "));
 
-    //Информация о восстановлени пакета
+    //Информация о восстановлении пакета
     if (oregon.restore_sign & 0x01) Serial.print(F("s")); //восстановлены одиночные такты
     else  Serial.print(F(" "));
     if (oregon.restore_sign & 0x02) Serial.print(F("d")); //восстановлены двойные такты
     else  Serial.print(F(" "));
-    if (oregon.restore_sign & 0x04) Serial.print(F("p ")); //исправленна ошибка при распознавании версии пакета
+    if (oregon.restore_sign & 0x04) Serial.print(F("p ")); //исправлена ошибка при распознавании версии пакета
     else  Serial.print(F("  "));
     if (oregon.restore_sign & 0x08) Serial.print(F("r ")); //собран из двух пакетов (для режима сборки в v.2)
     else  Serial.print(F("  "));
@@ -275,7 +275,7 @@ void loop()
     Serial.print(F("  "));
     Serial.print(oregon.work_time);
     Serial.print(F("ms "));
-    
+
     if ((oregon.sens_type == THGN132 ||
     (oregon.sens_type & 0x0FFF) == RTGN318 ||
     (oregon.sens_type & 0x0FFF) == RTHN318 ||
@@ -339,12 +339,12 @@ void loop()
       if (oregon.sens_type == THGR810 && oregon.sens_chnl > NOF_800) {Serial.println(); return;}
       if (oregon.sens_type == BTHGN129 && oregon.sens_chnl > NOF_129) {Serial.println(); return;}
       if ((oregon.sens_type & 0x0FFF) == RTGN318 && oregon.sens_chnl > NOF_318) {Serial.println(); return;}
-      
+
       byte _chnl = oregon.sens_chnl - 1;
-           
+
       if (oregon.sens_type == THGN500) _chnl = NOF_132;
-      if (oregon.sens_type == BTHR968 ) _chnl = NOF_132 + NOF_500; 
-      if (oregon.sens_type == BTHGN129 ) _chnl = NOF_132 + NOF_500 + NOF_968; 
+      if (oregon.sens_type == BTHR968 ) _chnl = NOF_132 + NOF_500;
+      if (oregon.sens_type == BTHGN129 ) _chnl = NOF_132 + NOF_500 + NOF_968;
       if (oregon.sens_type == THGR810 || oregon.sens_type == THN800) _chnl = NOF_132 + NOF_500 + NOF_968 + NOF_129;
       if ((oregon.sens_type & 0x0FFF) == RTGN318 || (oregon.sens_type & 0x0FFF) == RTHN318) _chnl  = NOF_132 + NOF_500 + NOF_968 + NOF_129 + NOF_800;
 
@@ -355,9 +355,9 @@ void loop()
       t_sensor[ _chnl].pressure = t_sensor[ _chnl].pressure * ((float)(t_sensor[ _chnl].number_of_receiving - 1) / (float)t_sensor[ _chnl].number_of_receiving) + oregon.get_pressure() / t_sensor[ _chnl].number_of_receiving;
       t_sensor[ _chnl].temperature = t_sensor[ _chnl].temperature * ((float)(t_sensor[ _chnl].number_of_receiving - 1) / (float)t_sensor[ _chnl].number_of_receiving) + oregon.sens_tmp / t_sensor[ _chnl].number_of_receiving;
       t_sensor[ _chnl].humidity = t_sensor[ _chnl].humidity * ((float)(t_sensor[ _chnl].number_of_receiving - 1) / (float)t_sensor[ _chnl].number_of_receiving) + oregon.sens_hmdty / t_sensor[ _chnl].number_of_receiving;
-      t_sensor[ _chnl].rcv_time = millis();         
+      t_sensor[ _chnl].rcv_time = millis();
     }
-    
+
     if (oregon.sens_type == PCR800 && oregon.crc_c)
     {
       Serial.print(F("\tPCR800  "));
@@ -375,9 +375,9 @@ void loop()
       rain_sensor.battery = oregon.sens_battery;
       rain_sensor.rate = oregon.get_rain_rate();
       rain_sensor.counter = oregon.get_total_rain();
-      rain_sensor.rcv_time = millis();         
-    }    
-    
+      rain_sensor.rcv_time = millis();
+    }
+
   if (oregon.sens_type == WGR800 && oregon.crc_c){
       Serial.print(F("\tWGR800  "));
       Serial.print(F("        "));
@@ -414,13 +414,13 @@ void loop()
       wind_sensor.battery = oregon.sens_battery;
       wind_sensor.number_of_receiving++;
       wind_sensor.number_of_dir_receiving++;
-            
+
       //Средняя скорость
       wind_sensor.midspeed = wind_sensor.midspeed * (((float)wind_sensor.number_of_receiving - 1) / (float)wind_sensor.number_of_receiving) + oregon.sens_avg_ws / wind_sensor.number_of_receiving;
-      
+
       //Порывы
       if (oregon.sens_max_ws > wind_sensor.maxspeed || wind_sensor.number_of_receiving == 1) wind_sensor.maxspeed = oregon.sens_max_ws;
-      
+
       //Направление
       //Вычисляется вектор - его направление и модуль.
       if (wind_sensor.number_of_dir_receiving == 1 && (wind_sensor.direction_x != 0 || wind_sensor.direction_y != 0))
@@ -429,7 +429,7 @@ void loop()
         wind_sensor.direction_x /= wdiv;
         wind_sensor.direction_y /= wdiv;
       }
-      
+
       //Единичные векторы для 16 румбов (индекс = oregon.sens_wdir, 0=N, 4=E, 8=S, 12=W)
       static const float wind_dir_vec[16][2] = {
         { 1.00f,  0.00f}, { 0.92f, -0.38f}, { 0.71f, -0.71f}, { 0.38f, -0.92f},
@@ -442,7 +442,7 @@ void loop()
         wind_sensor.direction_y += wind_dir_vec[oregon.sens_wdir][1];
       }
       wind_sensor.rcv_time = millis();
-    }    
+    }
 
     if (oregon.sens_type == UVN800 && oregon.crc_c)
     {
@@ -455,12 +455,12 @@ void loop()
 
       Serial.print(F(" UV IDX: "));
       Serial.print(oregon.UV_index);
-      
+
       uv_sensor.number_of_receiving++;
       uv_sensor.battery = oregon.sens_battery;
       uv_sensor.index = uv_sensor.index * ((float)(uv_sensor.number_of_receiving - 1) / (float)uv_sensor.number_of_receiving) + oregon.UV_index / uv_sensor.number_of_receiving;
-      uv_sensor.rcv_time = millis();         
-    }    
+      uv_sensor.rcv_time = millis();
+    }
 
     if (oregon.sens_type == RFCLOCK && oregon.crc_c){
       Serial.print(F("\tRF CLOCK"));
@@ -489,8 +489,8 @@ void loop()
       Serial.print('.');
       Serial.print(oregon.packet[9] & 0x0F, HEX);
       Serial.print((oregon.packet[9] & 0xF0) >> 4, HEX);
-      
-    }    
+
+    }
 
     if (oregon.sens_type == PCR800 && oregon.crc_c){
       Serial.print(F("\tPCR800  "));
@@ -506,7 +506,7 @@ void loop()
       Serial.print(F("mm/h"));
 
     }
-    
+
 #if ADD_SENS_SUPPORT == 1
       if ((oregon.sens_type & 0xFF00) == THP && oregon.crc_c) {
       Serial.print(F("\tTHP     "));
@@ -530,7 +530,7 @@ void loop()
       yield();
 
       if (oregon.sens_chnl > NOF_THP - 1) {Serial.println(); return;}
-      
+
       byte _chnl = oregon.sens_chnl  + NOF_132 + NOF_500 + NOF_968 + NOF_129 + NOF_800 + NOF_318;
       t_sensor[ _chnl].chnl = oregon.sens_chnl + 1;
       t_sensor[ _chnl].number_of_receiving++;
@@ -539,13 +539,13 @@ void loop()
       t_sensor[ _chnl].temperature = t_sensor[ _chnl].temperature * ((float)(t_sensor[ _chnl].number_of_receiving - 1) / (float)t_sensor[ _chnl].number_of_receiving) + oregon.sens_tmp / t_sensor[ _chnl].number_of_receiving;
       t_sensor[ _chnl].humidity = t_sensor[ _chnl].humidity * ((float)(t_sensor[ _chnl].number_of_receiving - 1) / (float)t_sensor[ _chnl].number_of_receiving) + oregon.sens_hmdty / t_sensor[ _chnl].number_of_receiving;
       t_sensor[ _chnl].voltage = t_sensor[ _chnl].voltage * ((float)(t_sensor[ _chnl].number_of_receiving - 1) / (float)t_sensor[ _chnl].number_of_receiving) + oregon.sens_voltage / t_sensor[ _chnl].number_of_receiving;
-      t_sensor[ _chnl].rcv_time = millis();         
-      
+      t_sensor[ _chnl].rcv_time = millis();
+
     }
 #endif
     Serial.println();
   }
-  yield();  
+  yield();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //***************************************************************************************************************************************
@@ -641,7 +641,7 @@ bool send_data() {
     return false;
   }
 
-  //Если соединения с сервером нет, по переподключаемся
+  //Если соединения с сервером нет, то переподключаемся
   if (WiFi.status() != WL_CONNECTED) wifi_connect();
 
   bool what_return = false;
@@ -671,11 +671,11 @@ bool send_data() {
         if (millis() - cur_mark > DISCONNECT_TIMEOUT) break;
       }
     }
-     
+
     Serial.println(' ');
     if (!TEST_MODE) client.stop();
     what_return = true;
-  } 
+  }
   else {
     Serial.println(F("connection to narodmon.ru failed"));
     if (!TEST_MODE) client.stop();
@@ -735,7 +735,7 @@ String buildOregonData()
       s += "#";
       s += t_sensor[i].temperature;
       s += "\n";
-    
+
       if (t_sensor[i].humidity > 0 && t_sensor[i].humidity <= 100 &&
       (t_sensor[i].type == THGN132 ||
        t_sensor[i].type == THGN500 ||
@@ -766,7 +766,7 @@ String buildOregonData()
         s += "\n";
       }
 
-      if ((t_sensor[i].type == BTHGN129  || 
+      if ((t_sensor[i].type == BTHGN129  ||
       #if ADD_SENS_SUPPORT == 1
       (t_sensor[i].type & 0xFF00) == THP  ||
       #endif
@@ -800,17 +800,17 @@ String buildOregonData()
     s += '\n';
     s += "#WSMAX#";
     s += wind_sensor.maxspeed;
-    s += '\n';    
-  } 
-  
-  if (wind_sensor.number_of_dir_receiving > 0 && wind_sensor.dir_cycle >= NO_WINDDIR) 
+    s += '\n';
+  }
+
+  if (wind_sensor.number_of_dir_receiving > 0 && wind_sensor.dir_cycle >= NO_WINDDIR)
   {
     s += "#DIR#";
     s += calc_wind_direction(&wind_sensor);
-    s += '\n';      
+    s += '\n';
   }
-    
-    
+
+
   //Отправляем данные PCR800
   if (rain_sensor.number_of_receiving > 0)
   {
@@ -830,23 +830,23 @@ String buildOregonData()
   return s;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-// Рассчёт направления ветра
+// Расчёт направления ветра
 ////////////////////////////////////////////////////////////////////////////////////////
 float calc_wind_direction(WGR800_sensor* wdata)
 {
  if (wdata->direction_x == 0) wdata->direction_x = 0.01;
  float otn = abs(wdata->direction_y / wdata->direction_x);
  float angle = (asin(otn / sqrt(1 + otn * otn))) * 180 / 3.14;
-  
+
  //Определяем направление
- if (wdata->direction_x > 0 && wdata->direction_y < 0) otn = angle; 
+ if (wdata->direction_x > 0 && wdata->direction_y < 0) otn = angle;
  if (wdata->direction_x < 0 && wdata->direction_y < 0) otn = 180 - angle;
  if (wdata->direction_x < 0 && wdata->direction_y >= 0) otn = 180 + angle;
  if (wdata->direction_x > 0 && wdata->direction_y >= 0) otn = 360 - angle;
-  
+
  angle = otn + WIND_CORRECTION; // Если маркер флюгера направлен не на север
  if (angle >= 360) angle -= 360;
- 
+
  return angle;
 }
 
@@ -857,5 +857,5 @@ void wait_timer(int del){
   unsigned long tm_marker = millis();
   while (millis() - tm_marker < del) yield();
   return;
-    
+
 }
