@@ -524,24 +524,23 @@ void loop()
       Serial.print(oregon.sens_id, HEX);
       Serial.print(" TIME: ");
       Serial.print(oregon.packet[6] & 0x0F, HEX);
-      Serial.print(oregon.packet[6] & 0xF0 >> 4, HEX);
+      Serial.print((oregon.packet[6] & 0xF0) >> 4, HEX);
       Serial.print(':');
       Serial.print(oregon.packet[5] & 0x0F, HEX);
-      Serial.print(oregon.packet[5] & 0xF0 >> 4, HEX);
-      Serial.print(':');
+      Serial.print((oregon.packet[5] & 0xF0) >> 4, HEX);
       Serial.print(':');
       Serial.print(oregon.packet[4] & 0x0F, HEX);
-      Serial.print(oregon.packet[4] & 0xF0 >> 4, HEX);
+      Serial.print((oregon.packet[4] & 0xF0) >> 4, HEX);
       Serial.print(" DATE: ");
       Serial.print(oregon.packet[7] & 0x0F, HEX);
-      Serial.print(oregon.packet[7] & 0xF0 >> 4, HEX);
+      Serial.print((oregon.packet[7] & 0xF0) >> 4, HEX);
       Serial.print('.');
-      if (oregon.packet[8] & 0x0F ==1 || oregon.packet[8] & 0x0F ==3)   Serial.print('1');
+      if ((oregon.packet[8] & 0x0F) == 1 || (oregon.packet[8] & 0x0F) == 3)   Serial.print('1');
       else Serial.print('0');
-      Serial.print(oregon.packet[8] & 0xF0 >> 4, HEX);
+      Serial.print((oregon.packet[8] & 0xF0) >> 4, HEX);
       Serial.print('.');
       Serial.print(oregon.packet[9] & 0x0F, HEX);
-      Serial.print(oregon.packet[9] & 0xF0 >> 4, HEX);
+      Serial.print((oregon.packet[9] & 0xF0) >> 4, HEX);
       
     }    
 
