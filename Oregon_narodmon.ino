@@ -28,6 +28,7 @@
 #define SEND_INTERVAL 300000            //Интервал отсылки данных на сервер, мс
 #define CONNECT_TIMEOUT 10000           //Время ожидания  соединения, мс
 #define DISCONNECT_TIMEOUT 10000        //Время ожидания отсоединения, мс
+#define WIFI_MAX_ATTEMPTS 30            //Кол-во неудачных попыток подключения к WiFi до перезагрузки модуля (~5 мин при CONNECT_TIMEOUT=10с)
 
 #define mac       "#FF:FF:FF:FF:FF:FF"  //МАС-адрес на narodmon.ru
 #define ssid      "ASUS"                //Параметры входа в WiFi
@@ -609,6 +610,7 @@ void wifi_connect() {
   Serial.print(ssid);
   unsigned long cur_mark = millis();
   bool blink = 0;
+  byte attempts = 0;
   //WiFi.config(ip, gateway, subnet);
   //Только режим клиента — гасим встроенную точку доступа ESP8266
   WiFi.mode(WIFI_STA);
@@ -617,7 +619,7 @@ void wifi_connect() {
       while (WiFi.status() != WL_CONNECTED) {
       if (blink) {
         digitalWrite(BLUE_LED, LOW);
-        
+
       }
       else {
         digitalWrite(BLUE_LED, HIGH);
@@ -628,7 +630,14 @@ void wifi_connect() {
       Serial.print(".");
       //Подключаемся слишком долго. Переподключаемся....
       if ((millis() - cur_mark) > CONNECT_TIMEOUT){
-        blink = 0; 
+        attempts++;
+        if (attempts >= WIFI_MAX_ATTEMPTS) {
+          Serial.println();
+          Serial.println("WiFi unreachable, rebooting...");
+          delay(1000);
+          ESP.restart();
+        }
+        blink = 0;
         digitalWrite(BLUE_LED, HIGH);
         WiFi.disconnect();
         delay(3000);
