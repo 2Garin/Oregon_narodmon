@@ -604,24 +604,15 @@ void wifi_connect() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool test_narodmon_connection() {
   if (TEST_MODE) return true;
+  // Проверяем только TCP-соединение, не отправляя данных протокола:
+  // отправка "##" без MAC и данных вызывала бы NODATA_ERROR на сервере.
   if (client.connect(nardomon_server, port)) {
-    client.println(F("##"));
-    cur_mark = millis();
-    do {
-      wait_timer(10);
-      if ((millis() - cur_mark) > CONNECT_TIMEOUT) {
-        Serial.println(F("narodmon.ru is not responding"));
-        client.stop();
-        return 0;
-      }
-    } while (!client.connected());
     Serial.println(F("narodmon.ru is attainable"));
     client.stop();
     return 1;
   }
   else {
     Serial.println(F("connection to narodmon.ru failed"));
-    client.stop();
     return 0;
   }
 }
