@@ -147,13 +147,13 @@ void setup()
   //Запуск Serial-ов
 
   Serial.begin(115200);
-  Serial.println("");
-  Serial.println("");
+  Serial.println();
+  Serial.println();
 
   //Инициализация ГПСЧ для джиттера влажности при морозе
   randomSeed(micros());
 
-  if (TEST_MODE) Serial.println("TEST MODE");
+  if (TEST_MODE) Serial.println(F("TEST MODE"));
 
   
   /////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ void loop()
 
     oregon.start();    
     }
-    else Serial.println("No data to send");
+    else Serial.println(F("No data to send"));
   }
 
 
@@ -251,30 +251,30 @@ void loop()
     yield();
     //Вывод информации в Serial
     Serial.print ((float) millis() / 1000, 1); //Время
-    Serial.print ("s\t\t");
+    Serial.print (F("s\t\t"));
     //Версия протокола
-    if (oregon.ver == 2) Serial.print("  ");
-    if (oregon.ver == 3) Serial.print("3 ");
-    
+    if (oregon.ver == 2) Serial.print(F("  "));
+    if (oregon.ver == 3) Serial.print(F("3 "));
+
     //Информация о восстановлени пакета
-    if (oregon.restore_sign & 0x01) Serial.print("s"); //восстановлены одиночные такты
-    else  Serial.print(" ");
-    if (oregon.restore_sign & 0x02) Serial.print("d"); //восстановлены двойные такты
-    else  Serial.print(" ");
-    if (oregon.restore_sign & 0x04) Serial.print("p "); //исправленна ошибка при распознавании версии пакета
-    else  Serial.print("  ");
-    if (oregon.restore_sign & 0x08) Serial.print("r "); //собран из двух пакетов (для режима сборки в v.2)
-    else  Serial.print("  ");
+    if (oregon.restore_sign & 0x01) Serial.print(F("s")); //восстановлены одиночные такты
+    else  Serial.print(F(" "));
+    if (oregon.restore_sign & 0x02) Serial.print(F("d")); //восстановлены двойные такты
+    else  Serial.print(F(" "));
+    if (oregon.restore_sign & 0x04) Serial.print(F("p ")); //исправленна ошибка при распознавании версии пакета
+    else  Serial.print(F("  "));
+    if (oregon.restore_sign & 0x08) Serial.print(F("r ")); //собран из двух пакетов (для режима сборки в v.2)
+    else  Serial.print(F("  "));
 
     //Вывод полученного пакета.
     for (int q = 0;q < oregon.packet_length; q++)
       if (oregon.valid_p[q] == 0x0F) Serial.print(oregon.packet[q], HEX);
-      else Serial.print(" ");
-        
+      else Serial.print(F(" "));
+
     //Время обработки пакета
-    Serial.print("  ");
+    Serial.print(F("  "));
     Serial.print(oregon.work_time);
-    Serial.print("ms ");
+    Serial.print(F("ms "));
     
     if ((oregon.sens_type == THGN132 ||
     (oregon.sens_type & 0x0FFF) == RTGN318 ||
@@ -286,51 +286,51 @@ void loop()
     oregon.sens_type == BTHR968 ||
     oregon.sens_type == THGN500) && oregon.crc_c)
     {
-      Serial.print("\t");
-      if (oregon.sens_type == THGN132) Serial.print("THGN132N");
-      if (oregon.sens_type == THGN500) Serial.print("THGN500 ");
-      if (oregon.sens_type == THGR810) Serial.print("THGR810 ");
-      if ((oregon.sens_type & 0x0FFF) == RTGN318) Serial.print("RTGN318 ");
-      if ((oregon.sens_type & 0x0FFF) == RTHN318) Serial.print("RTHN318 ");
-      if (oregon.sens_type == THN132 ) Serial.print("THN132N ");
-      if (oregon.sens_type == THN800 ) Serial.print("THN800  ");
-      if (oregon.sens_type == BTHGN129 ) Serial.print("BTHGN129");
-      if (oregon.sens_type == BTHR968 ) Serial.print("BTHR968 ");
+      Serial.print(F("\t"));
+      if (oregon.sens_type == THGN132) Serial.print(F("THGN132N"));
+      if (oregon.sens_type == THGN500) Serial.print(F("THGN500 "));
+      if (oregon.sens_type == THGR810) Serial.print(F("THGR810 "));
+      if ((oregon.sens_type & 0x0FFF) == RTGN318) Serial.print(F("RTGN318 "));
+      if ((oregon.sens_type & 0x0FFF) == RTHN318) Serial.print(F("RTHN318 "));
+      if (oregon.sens_type == THN132 ) Serial.print(F("THN132N "));
+      if (oregon.sens_type == THN800 ) Serial.print(F("THN800  "));
+      if (oregon.sens_type == BTHGN129 ) Serial.print(F("BTHGN129"));
+      if (oregon.sens_type == BTHR968 ) Serial.print(F("BTHR968 "));
 
       if (oregon.sens_type != BTHR968 && oregon.sens_type != THGN500)
       {
-        Serial.print(" CHNL: ");
+        Serial.print(F(" CHNL: "));
         Serial.print(oregon.sens_chnl);
       }
-      else Serial.print("        ");
-      Serial.print(" BAT: ");
-      if (oregon.sens_battery) Serial.print("F "); else Serial.print("e ");
-      Serial.print("ID: ");
+      else Serial.print(F("        "));
+      Serial.print(F(" BAT: "));
+      if (oregon.sens_battery) Serial.print(F("F ")); else Serial.print(F("e "));
+      Serial.print(F("ID: "));
       Serial.print(oregon.sens_id, HEX);
-      
-      if (oregon.sens_tmp >= 0 && oregon.sens_tmp < 10) Serial.print(" TMP:  ");
-      if (oregon.sens_tmp < 0 && oregon.sens_tmp >-10) Serial.print(" TMP: ");
-      if (oregon.sens_tmp <= -10) Serial.print(" TMP:");
-      if (oregon.sens_tmp >= 10) Serial.print(" TMP: ");
+
+      if (oregon.sens_tmp >= 0 && oregon.sens_tmp < 10) Serial.print(F(" TMP:  "));
+      if (oregon.sens_tmp < 0 && oregon.sens_tmp >-10) Serial.print(F(" TMP: "));
+      if (oregon.sens_tmp <= -10) Serial.print(F(" TMP:"));
+      if (oregon.sens_tmp >= 10) Serial.print(F(" TMP: "));
       Serial.print(oregon.sens_tmp, 1);
-      Serial.print("C ");
+      Serial.print(F("C "));
       if (oregon.sens_type == THGN132 ||
           oregon.sens_type == THGR810 ||
           oregon.sens_type == BTHGN129 ||
           oregon.sens_type == BTHR968 ||
           (oregon.sens_type & 0x0FFF) == RTGN318 ||
           oregon.sens_type == THGN500 ) {
-        Serial.print("HUM: ");
+        Serial.print(F("HUM: "));
         Serial.print(oregon.sens_hmdty, 0);
-        Serial.print("%");
+        Serial.print(F("%"));
       }
-      else Serial.print("        ");
+      else Serial.print(F("        "));
 
       if (oregon.sens_type == BTHGN129 ||  oregon.sens_type == BTHR968)
       {
-      Serial.print(" PRESS: ");
+      Serial.print(F(" PRESS: "));
       Serial.print(oregon.get_pressure(), 1);
-      Serial.print("Hgmm ");
+      Serial.print(F("Hgmm "));
       }
 
       if (oregon.sens_type == THGN132 && oregon.sens_chnl > NOF_132) {Serial.println(); return;}
@@ -360,17 +360,17 @@ void loop()
     
     if (oregon.sens_type == PCR800 && oregon.crc_c)
     {
-      Serial.print("\tPCR800  ");
-      Serial.print("        ");
-      Serial.print(" BAT: ");
-      if (oregon.sens_battery) Serial.print("F "); else Serial.print("e ");
-      Serial.print(" ID: ");
+      Serial.print(F("\tPCR800  "));
+      Serial.print(F("        "));
+      Serial.print(F(" BAT: "));
+      if (oregon.sens_battery) Serial.print(F("F ")); else Serial.print(F("e "));
+      Serial.print(F(" ID: "));
       Serial.print(oregon.sens_id, HEX);
-      Serial.print("   TOTAL: ");
+      Serial.print(F("   TOTAL: "));
       Serial.print(oregon.get_total_rain(), 1);
-      Serial.print("mm  RATE: ");
+      Serial.print(F("mm  RATE: "));
       Serial.print(oregon.get_rain_rate(), 1);
-      Serial.print("mm/h");
+      Serial.print(F("mm/h"));
       rain_sensor.number_of_receiving++;
       rain_sensor.battery = oregon.sens_battery;
       rain_sensor.rate = oregon.get_rain_rate();
@@ -379,36 +379,36 @@ void loop()
     }    
     
   if (oregon.sens_type == WGR800 && oregon.crc_c){
-      Serial.print("\tWGR800  ");
-      Serial.print("        ");
-      Serial.print(" BAT: ");
-      if (oregon.sens_battery) Serial.print("F "); else Serial.print("e ");
-      Serial.print("ID: ");
+      Serial.print(F("\tWGR800  "));
+      Serial.print(F("        "));
+      Serial.print(F(" BAT: "));
+      if (oregon.sens_battery) Serial.print(F("F ")); else Serial.print(F("e "));
+      Serial.print(F("ID: "));
       Serial.print(oregon.sens_id, HEX);
-      
-      Serial.print(" AVG: ");
+
+      Serial.print(F(" AVG: "));
       Serial.print(oregon.sens_avg_ws, 1);
-      Serial.print("m/s  MAX: ");
+      Serial.print(F("m/s  MAX: "));
       Serial.print(oregon.sens_max_ws, 1);
-      Serial.print("m/s  DIR: "); //N = 0, E = 4, S = 8, W = 12
+      Serial.print(F("m/s  DIR: ")); //N = 0, E = 4, S = 8, W = 12
       switch (oregon.sens_wdir)
       {
-      case 0: Serial.print("N"); break;
-      case 1: Serial.print("NNE"); break;
-      case 2: Serial.print("NE"); break;
-      case 3: Serial.print("NEE"); break;
-      case 4: Serial.print("E"); break;
-      case 5: Serial.print("SEE"); break;
-      case 6: Serial.print("SE"); break;
-      case 7: Serial.print("SSE"); break;
-      case 8: Serial.print("S"); break;
-      case 9: Serial.print("SSW"); break;
-      case 10: Serial.print("SW"); break;
-      case 11: Serial.print("SWW"); break;
-      case 12: Serial.print("W"); break;
-      case 13: Serial.print("NWW"); break;
-      case 14: Serial.print("NW"); break;
-      case 15: Serial.print("NNW"); break;
+      case 0: Serial.print(F("N")); break;
+      case 1: Serial.print(F("NNE")); break;
+      case 2: Serial.print(F("NE")); break;
+      case 3: Serial.print(F("NEE")); break;
+      case 4: Serial.print(F("E")); break;
+      case 5: Serial.print(F("SEE")); break;
+      case 6: Serial.print(F("SE")); break;
+      case 7: Serial.print(F("SSE")); break;
+      case 8: Serial.print(F("S")); break;
+      case 9: Serial.print(F("SSW")); break;
+      case 10: Serial.print(F("SW")); break;
+      case 11: Serial.print(F("SWW")); break;
+      case 12: Serial.print(F("W")); break;
+      case 13: Serial.print(F("NWW")); break;
+      case 14: Serial.print(F("NW")); break;
+      case 15: Serial.print(F("NNW")); break;
       }
 
       wind_sensor.battery = oregon.sens_battery;
@@ -430,82 +430,30 @@ void loop()
         wind_sensor.direction_y /= wdiv;
       }
       
-      float wind_module = 1;
-      if (oregon.sens_wdir == 0) {
-        wind_sensor.direction_x += 1 * wind_module;
+      //Единичные векторы для 16 румбов (индекс = oregon.sens_wdir, 0=N, 4=E, 8=S, 12=W)
+      static const float wind_dir_vec[16][2] = {
+        { 1.00f,  0.00f}, { 0.92f, -0.38f}, { 0.71f, -0.71f}, { 0.38f, -0.92f},
+        { 0.00f, -1.00f}, {-0.38f, -0.92f}, {-0.71f, -0.71f}, {-0.92f, -0.38f},
+        {-1.00f,  0.00f}, {-0.92f,  0.38f}, {-0.71f,  0.71f}, {-0.38f,  0.92f},
+        { 0.00f,  1.00f}, { 0.38f,  0.92f}, { 0.71f,  0.71f}, { 0.92f,  0.38f}
+      };
+      if (oregon.sens_wdir < 16) {
+        wind_sensor.direction_x += wind_dir_vec[oregon.sens_wdir][0];
+        wind_sensor.direction_y += wind_dir_vec[oregon.sens_wdir][1];
       }
-      if (oregon.sens_wdir == 1) {
-        wind_sensor.direction_x += 0.92 * wind_module;
-        wind_sensor.direction_y -= 0.38 * wind_module;
-      }
-      if (oregon.sens_wdir == 2) {
-        wind_sensor.direction_x += 0.71 * wind_module;
-        wind_sensor.direction_y -= 0.71 * wind_module;
-      }
-      if (oregon.sens_wdir == 3) {
-        wind_sensor.direction_x += 0.38 * wind_module;
-        wind_sensor.direction_y -= 0.92 * wind_module;
-      }
-      if (oregon.sens_wdir == 4) {
-        wind_sensor.direction_y -= 1 * wind_module;
-      }
-      
-      if (oregon.sens_wdir == 5) {
-        wind_sensor.direction_x -= 0.38 * wind_module;
-        wind_sensor.direction_y -= 0.92 * wind_module;
-      }
-      if (oregon.sens_wdir == 6) {
-        wind_sensor.direction_x -= 0.71 * wind_module;
-        wind_sensor.direction_y -= 0.71 * wind_module;
-      }
-      if (oregon.sens_wdir == 7) {
-        wind_sensor.direction_x -= 0.92 * wind_module;
-        wind_sensor.direction_y -= 0.38 * wind_module;
-      }
-      if (oregon.sens_wdir == 8) {
-        wind_sensor.direction_x -= 1 * wind_module;
-      }
-      if (oregon.sens_wdir == 9) {
-        wind_sensor.direction_x -= 0.92 * wind_module;
-        wind_sensor.direction_y += 0.38 * wind_module;
-      }
-      if (oregon.sens_wdir == 10) {
-        wind_sensor.direction_x -= 0.71 * wind_module;
-        wind_sensor.direction_y += 0.71 * wind_module;
-      
-      }
-      if (oregon.sens_wdir == 11) {
-        wind_sensor.direction_x -= 0.38 * wind_module;
-        wind_sensor.direction_y += 0.92 * wind_module;
-      }
-      if (oregon.sens_wdir == 12) {
-        wind_sensor.direction_y += 1 * wind_module;
-      }
-      if (oregon.sens_wdir == 13) {
-        wind_sensor.direction_x += 0.38 * wind_module;
-        wind_sensor.direction_y += 0.92 * wind_module;
-      }
-      if (oregon.sens_wdir == 14) {
-        wind_sensor.direction_x += 0.71 * wind_module;
-        wind_sensor.direction_y += 0.71 * wind_module;
-      }
-      if (oregon.sens_wdir == 15) {
-        wind_sensor.direction_x += 0.92 * wind_module;
-        wind_sensor.direction_y += 0.38 * wind_module;
-      }
-        wind_sensor.rcv_time = millis();
+      wind_sensor.rcv_time = millis();
     }    
 
     if (oregon.sens_type == UVN800 && oregon.crc_c)
     {
-      Serial.print("\tUVN800  ");
-      Serial.print("        ");
-      Serial.print(" BAT: ");
-      if (oregon.sens_battery) Serial.print("F "); else Serial.print("e ");
-      Serial.print("ID: ");
+      Serial.print(F("\tUVN800  "));
+      Serial.print(F("        "));
+      Serial.print(F(" BAT: "));
+      if (oregon.sens_battery) Serial.print(F("F ")); else Serial.print(F("e "));
+      Serial.print(F("ID: "));
       Serial.print(oregon.sens_id, HEX);
-      
-      Serial.print(" UV IDX: ");
+
+      Serial.print(F(" UV IDX: "));
       Serial.print(oregon.UV_index);
       
       uv_sensor.number_of_receiving++;
@@ -515,14 +463,14 @@ void loop()
     }    
 
     if (oregon.sens_type == RFCLOCK && oregon.crc_c){
-      Serial.print("\tRF CLOCK");
-      Serial.print(" CHNL: ");
+      Serial.print(F("\tRF CLOCK"));
+      Serial.print(F(" CHNL: "));
       Serial.print(oregon.sens_chnl);
-      Serial.print(" BAT: ");
-      if (oregon.sens_battery) Serial.print("F "); else Serial.print("e ");
-      Serial.print("ID: ");
+      Serial.print(F(" BAT: "));
+      if (oregon.sens_battery) Serial.print(F("F ")); else Serial.print(F("e "));
+      Serial.print(F("ID: "));
       Serial.print(oregon.sens_id, HEX);
-      Serial.print(" TIME: ");
+      Serial.print(F(" TIME: "));
       Serial.print(oregon.packet[6] & 0x0F, HEX);
       Serial.print((oregon.packet[6] & 0xF0) >> 4, HEX);
       Serial.print(':');
@@ -531,7 +479,7 @@ void loop()
       Serial.print(':');
       Serial.print(oregon.packet[4] & 0x0F, HEX);
       Serial.print((oregon.packet[4] & 0xF0) >> 4, HEX);
-      Serial.print(" DATE: ");
+      Serial.print(F(" DATE: "));
       Serial.print(oregon.packet[7] & 0x0F, HEX);
       Serial.print((oregon.packet[7] & 0xF0) >> 4, HEX);
       Serial.print('.');
@@ -545,40 +493,40 @@ void loop()
     }    
 
     if (oregon.sens_type == PCR800 && oregon.crc_c){
-      Serial.print("\tPCR800  ");
-      Serial.print("        ");
-      Serial.print(" BAT: ");
-      if (oregon.sens_battery) Serial.print("F "); else Serial.print("e ");
-      Serial.print(" ID: ");
+      Serial.print(F("\tPCR800  "));
+      Serial.print(F("        "));
+      Serial.print(F(" BAT: "));
+      if (oregon.sens_battery) Serial.print(F("F ")); else Serial.print(F("e "));
+      Serial.print(F(" ID: "));
       Serial.print(oregon.sens_id, HEX);
-      Serial.print("   TOTAL: ");
+      Serial.print(F("   TOTAL: "));
       Serial.print(oregon.get_total_rain(), 1);
-      Serial.print("mm  RATE: ");
+      Serial.print(F("mm  RATE: "));
       Serial.print(oregon.get_rain_rate(), 1);
-      Serial.print("mm/h");
-      
-    }    
+      Serial.print(F("mm/h"));
+
+    }
     
 #if ADD_SENS_SUPPORT == 1
       if ((oregon.sens_type & 0xFF00) == THP && oregon.crc_c) {
-      Serial.print("\tTHP     ");
-      Serial.print(" CHNL: ");
+      Serial.print(F("\tTHP     "));
+      Serial.print(F(" CHNL: "));
       Serial.print(oregon.sens_chnl);
-      Serial.print(" BAT: ");
+      Serial.print(F(" BAT: "));
       Serial.print(oregon.sens_voltage, 2);
-      Serial.print("V");
-      if (oregon.sens_tmp > 0 && oregon.sens_tmp < 10) Serial.print(" TMP:  ");
-      if (oregon.sens_tmp < 0 && oregon.sens_tmp > -10) Serial.print(" TMP: ");
-      if (oregon.sens_tmp <= -10) Serial.print(" TMP:");
-      if (oregon.sens_tmp >= 10) Serial.print(" TMP: ");
+      Serial.print(F("V"));
+      if (oregon.sens_tmp > 0 && oregon.sens_tmp < 10) Serial.print(F(" TMP:  "));
+      if (oregon.sens_tmp < 0 && oregon.sens_tmp > -10) Serial.print(F(" TMP: "));
+      if (oregon.sens_tmp <= -10) Serial.print(F(" TMP:"));
+      if (oregon.sens_tmp >= 10) Serial.print(F(" TMP: "));
       Serial.print(oregon.sens_tmp, 1);
-      Serial.print("C ");
-      Serial.print("HUM: ");
+      Serial.print(F("C "));
+      Serial.print(F("HUM: "));
       Serial.print(oregon.sens_hmdty, 1);
-      Serial.print("% ");
-      Serial.print("PRESS: ");
+      Serial.print(F("% "));
+      Serial.print(F("PRESS: "));
       Serial.print(oregon.sens_pressure, 1);
-      Serial.print("Hgmm");
+      Serial.print(F("Hgmm"));
       yield();
 
       if (oregon.sens_chnl > NOF_THP - 1) {Serial.println(); return;}
@@ -603,9 +551,9 @@ void loop()
 //***************************************************************************************************************************************
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void wifi_connect() {
-  
+
   Serial.println();
-  Serial.print("Connecting to ");
+  Serial.print(F("Connecting to "));
   Serial.print(ssid);
   unsigned long cur_mark = millis();
   bool blink = 0;
@@ -626,13 +574,13 @@ void wifi_connect() {
       }
       blink = !blink;
       delay(500);
-      Serial.print(".");
+      Serial.print(F("."));
       //Подключаемся слишком долго. Переподключаемся....
       if ((millis() - cur_mark) > CONNECT_TIMEOUT){
         attempts++;
         if (attempts >= WIFI_MAX_ATTEMPTS) {
           Serial.println();
-          Serial.println("WiFi unreachable, rebooting...");
+          Serial.println(F("WiFi unreachable, rebooting..."));
           delay(1000);
           ESP.restart();
         }
@@ -646,8 +594,8 @@ void wifi_connect() {
     }
   } while (WiFi.status() != WL_CONNECTED);
 
-  Serial.println("");
-  Serial.println("WiFi connected");
+  Serial.println();
+  Serial.println(F("WiFi connected"));
   Serial.println(WiFi.localIP());
 
 }
@@ -655,23 +603,23 @@ void wifi_connect() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool test_narodmon_connection() {
   if (TEST_MODE) return true;
-  if (client.connect(nardomon_server, port)) {  
-    client.println("##");
+  if (client.connect(nardomon_server, port)) {
+    client.println(F("##"));
     cur_mark = millis();
     do {
       wait_timer(10);
       if ((millis() - cur_mark) > CONNECT_TIMEOUT) {
-        Serial.println("narodmon.ru is not responding");
+        Serial.println(F("narodmon.ru is not responding"));
         client.stop();
         return 0;
       }
     } while (!client.connected());
-    Serial.println("narodmon.ru is attainable");
+    Serial.println(F("narodmon.ru is attainable"));
     client.stop();
     return 1;
-  } 
+  }
   else {
-    Serial.println("connection to narodmon.ru failed");
+    Serial.println(F("connection to narodmon.ru failed"));
     client.stop();
     return 0;
   }
@@ -687,7 +635,7 @@ bool send_data() {
   String payload = buildOregonData();
   if (payload.length() == 0)
   {
-    Serial.println("No sensor data — skip transmission");
+    Serial.println(F("No sensor data — skip transmission"));
     lastConnectionTime = millis();
     reset_sensor_counters();
     return false;
@@ -711,8 +659,8 @@ bool send_data() {
     if (!TEST_MODE) client.print(payload);
 
     //Завершаем передачу
-    if (!TEST_MODE) client.println("##");
-    Serial.println("##");
+    if (!TEST_MODE) client.println(F("##"));
+    Serial.println(F("##"));
     //Ждём отключения клиента (сервер сам закрывает соединение после "##")
     cur_mark = millis();
     if (!TEST_MODE)
@@ -729,7 +677,7 @@ bool send_data() {
     what_return = true;
   } 
   else {
-    Serial.println("connection to narodmon.ru failed");
+    Serial.println(F("connection to narodmon.ru failed"));
     if (!TEST_MODE) client.stop();
   }
   lastConnectionTime = millis();
@@ -762,6 +710,8 @@ void reset_sensor_counters()
 String buildOregonData()
 {
   String s = "", pref;
+  //Резервируем буфер сразу — чтобы не дробить кучу множеством realloc при +=
+  s.reserve(512);
 
   for (byte i = 0; i < N_OF_THP_SENSORS; i++)
   {
