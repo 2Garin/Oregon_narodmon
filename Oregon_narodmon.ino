@@ -757,8 +757,9 @@ String buildOregonData()
 
   for (byte i = 0; i < N_OF_THP_SENSORS; i++)
   {
-    if (t_sensor[i].number_of_receiving > 0) 
+    if (t_sensor[i].number_of_receiving > 0)
     {
+      pref = "";
       if (t_sensor[i].type == BTHGN129) pref = "20";
       if (t_sensor[i].type == THGN132 ||t_sensor[i].type == THN132) pref = "30";
       if ((t_sensor[i].type & 0x0FFF) == RTGN318 || (t_sensor[i].type & 0x0FFF) == RTHN318) pref = "40";
@@ -766,7 +767,10 @@ String buildOregonData()
       if ((t_sensor[i].type & 0xFF00) == THP) pref = "70";
       if (t_sensor[i].type == THGR810 ||t_sensor[i].type == THN800) pref = "80";
       if (t_sensor[i].type == BTHR968) pref = "90";
-      
+
+      //Если тип неизвестен — пропускаем сенсор, не льём мусор на сервер
+      if (pref.length() == 0) continue;
+
       s += "#T";
       s += pref;
       s += t_sensor[i].chnl;
