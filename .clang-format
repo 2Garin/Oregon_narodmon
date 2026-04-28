@@ -1,0 +1,74 @@
+---
+# Конфиг clang-format для скетча Oregon_narodmon.ino.
+# За основу взят Google style, отдельные пункты подкручены под существующий код.
+# Документация: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+Language:        Cpp
+BasedOnStyle:    Google
+
+# Базовая геометрия
+IndentWidth:     2
+TabWidth:        2
+UseTab:          Never
+ColumnLimit:     120                 # Arduino-проекты обычно длиннее, 80 символов слишком тесно
+
+# Стиль фигурных скобок: гибрид Allman (функции/структуры) и K&R (if/else/циклы) —
+# именно так уже написан существующий код.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction:        true
+  AfterClass:           true
+  AfterStruct:          true
+  AfterUnion:           true
+  AfterEnum:            false
+  AfterControlStatement: false
+  AfterCaseLabel:       false
+  BeforeElse:           false
+  BeforeCatch:          false
+  IndentBraces:         false
+  SplitEmptyFunction:   true
+  SplitEmptyRecord:     true
+
+# Однострочные конструкции: разрешаем `if (x) doSomething();` и однострочные функции,
+# но не циклы — это привычный Arduino-стиль.
+# AllIfsAndElse оставляет на одной строке и if-с-else, типичный для парного отладочного вывода.
+AllowShortIfStatementsOnASingleLine:    AllIfsAndElse
+AllowShortLoopsOnASingleLine:           false
+AllowShortFunctionsOnASingleLine:       Inline
+AllowShortBlocksOnASingleLine:          Empty
+AllowShortCaseLabelsOnASingleLine:      true
+
+# Пробелы и выравнивание
+SpaceBeforeParens:                      ControlStatements
+SpacesInParentheses:                    false
+SpaceInEmptyParentheses:                false
+SpaceAfterCStyleCast:                   false
+SpacesBeforeTrailingComments:           1
+PointerAlignment:                       Left      # int* p; а не int *p;
+DerivePointerAlignment:                 false
+
+# Не дёргать чужое: includes не сортируем (порядок может быть значимым на встраиваемых платформах),
+# комментарии не переформатируем (сохраняем баннеры //////).
+SortIncludes:                           false
+ReflowComments:                         false
+
+# Пустые строки
+KeepEmptyLinesAtTheStartOfBlocks:       false   # убирает пустую строку сразу после {
+MaxEmptyLinesToKeep:                    1       # не больше одной подряд
+
+# Прочие настройки, которые имеют значение для embedded
+AlignAfterOpenBracket:                  Align
+AlignConsecutiveAssignments:            false
+AlignConsecutiveDeclarations:           false
+AlignConsecutiveMacros:                 true     # выравнивает значения в подряд идущих #define
+AlignTrailingComments:                  true
+BinPackArguments:                       true
+BinPackParameters:                      true
+Cpp11BracedListStyle:                   true
+FixNamespaceComments:                   true
+IncludeBlocks:                          Preserve
+IndentCaseLabels:                       true
+IndentPPDirectives:                     None
+NamespaceIndentation:                   None
+Standard:                               c++17
+...
