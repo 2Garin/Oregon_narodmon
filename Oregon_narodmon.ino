@@ -762,7 +762,7 @@ String buildOregonData()
     {
       if (t_sensor[i].type == BTHGN129) pref = "20";
       if (t_sensor[i].type == THGN132 ||t_sensor[i].type == THN132) pref = "30";
-      if ((oregon.sens_type & 0x0FFF) == RTGN318 || (oregon.sens_type & 0x0FFF) == RTHN318) pref = "40";
+      if ((t_sensor[i].type & 0x0FFF) == RTGN318 || (t_sensor[i].type & 0x0FFF) == RTHN318) pref = "40";
       if (t_sensor[i].type == THGN500) pref = "50";
       if ((t_sensor[i].type & 0xFF00) == THP) pref = "70";
       if (t_sensor[i].type == THGR810 ||t_sensor[i].type == THN800) pref = "80";
